@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <script src="node_modules/@microsoft/signalr/dist/browser/signalr.min.js"> </script>
+   <script src="node_modules/jquery/dist/jquery.min.js"> </script>
+    <script>
+        $(document).ready(()=>{
+            const connection=new signalR.HubConnectionBuilder()
+            .withUrl("https://localhost:5001/messageHub")
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
+            let  connectionId="";
+            connection.on("userJoined",id =>{
+                  connectionId = id;
+                 
+                });
+                connection.on("reciveMessage",message=>{
+                    $("div").html(message);
+                    $("div").fadeIn(2000,()=>{
+
+                    });
+                });
+                connection.start().catch(err => console.error(err.toString()));
+             $("button").click(() => {
+                let email=$("#txtEmail").val();
+                let message=$("#txtMessage").val();
+                $.post("https://localhost:5001/api/message",{
+                    Email:email,
+                    Message:message,
+                    ConnectionId : connectionId
+                },()=>{
+
+                });
+
+
+             });
+        });
+    </script>
+</head>
+<body>
+    <div style="background-color: brown;display: none;"></div>
+    <input type="text" id="txtDevice" placeholder="device"> <br>
+    <input type="email" id="txtEmail" placeholder="email"> <br>
+    <input type="text" id="txtMessage" placeholder="mesaj"> <br>
+    <button>Gönder</button>
+</body>
+</html>
